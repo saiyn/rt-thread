@@ -36,7 +36,7 @@ static rt_uint8_t serial_soft_trans_irq_stack[512];
 static struct rt_thread thread_serial_soft_trans_irq;
 /* serial event */
 static struct rt_event event_serial;
-/* modbus slave serial device */
+/* modbus master serial device */
 static rt_serial_t *serial;
 
 /* ----------------------- Defines ------------------------------------------*/
@@ -53,29 +53,30 @@ static void serial_soft_trans_irq(void* parameter);
 BOOL xMBMasterPortSerialInit(UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits,
         eMBParity eParity)
 {
+    rt_device_t dev = RT_NULL;
+    char uart_name[20];
+
     /**
      * set 485 mode receive and transmit control IO
      * @note MODBUS_MASTER_RT_CONTROL_PIN_INDEX need be defined by user
      */
+#if defined(RT_MODBUS_MASTER_USE_CONTROL_PIN)
     rt_pin_mode(MODBUS_MASTER_RT_CONTROL_PIN_INDEX, PIN_MODE_OUTPUT);
-
+#endif
     /* set serial name */
-    if (ucPORT == 1) {
-#if defined(RT_USING_UART1) || defined(RT_USING_REMAP_UART1)
-        extern struct rt_serial_device serial1;
-        serial = &serial1;
-#endif
-    } else if (ucPORT == 2) {
-#if defined(RT_USING_UART2)
-        extern struct rt_serial_device serial2;
-        serial = &serial2;
-#endif
-    } else if (ucPORT == 3) {
-#if defined(RT_USING_UART3)
-        extern struct rt_serial_device serial3;
-        serial = &serial3;
-#endif
+    rt_snprintf(uart_name,sizeof(uart_name), "uart%d", ucPORT);
+
+    dev = rt_device_find(uart_name);
+    if(dev == RT_NULL)
+    {
+        /* can not find uart */
+        return FALSE;
     }
+    else
+    {
+        serial = (struct rt_serial_device*)dev;
+    }
+
     /* set serial configure parameter */
     serial->config.baud_rate = ulBaudRate;
     serial->config.stop_bits = STOP_BITS_1;
@@ -100,23 +101,22 @@ BOOL xMBMasterPortSerialInit(UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits,
     serial->ops->configure(serial, &(serial->config));
 
     /* open serial device */
-    if (!serial->parent.open(&serial->parent,
-            RT_DEVICE_OFLAG_RDWR | RT_DEVICE_FLAG_INT_RX )) {
-        serial->parent.rx_indicate = serial_rx_ind;
+    if (!rt_device_open(&serial->parent, RT_DEVICE_OFLAG_RDWR | RT_DEVICE_FLAG_INT_RX)) {
+        rt_device_set_rx_indicate(&serial->parent, serial_rx_ind);
     } else {
         return FALSE;
     }
 
     /* software initialize */
+    rt_event_init(&event_serial, "master event", RT_IPC_FLAG_PRIO);
     rt_thread_init(&thread_serial_soft_trans_irq,
-                   "slave trans",
+                   "master trans",
                    serial_soft_trans_irq,
                    RT_NULL,
                    serial_soft_trans_irq_stack,
                    sizeof(serial_soft_trans_irq_stack),
                    10, 5);
     rt_thread_startup(&thread_serial_soft_trans_irq);
-    rt_event_init(&event_serial, "slave event", RT_IPC_FLAG_PRIO);
 
     return TRUE;
 }
@@ -129,12 +129,16 @@ void vMBMasterPortSerialEnable(BOOL xRxEnable, BOOL xTxEnable)
         /* enable RX interrupt */
         serial->ops->control(serial, RT_DEVICE_CTRL_SET_INT, (void *)RT_DEVICE_FLAG_INT_RX);
         /* switch 485 to receive mode */
+#if defined(RT_MODBUS_MASTER_USE_CONTROL_PIN)
         rt_pin_write(MODBUS_MASTER_RT_CONTROL_PIN_INDEX, PIN_LOW);
+#endif
     }
     else
     {
         /* switch 485 to transmit mode */
+#if defined(RT_MODBUS_MASTER_USE_CONTROL_PIN)
         rt_pin_write(MODBUS_MASTER_RT_CONTROL_PIN_INDEX, PIN_HIGH);
+#endif
         /* disable RX interrupt */
         serial->ops->control(serial, RT_DEVICE_CTRL_CLR_INT, (void *)RT_DEVICE_FLAG_INT_RX);
     }

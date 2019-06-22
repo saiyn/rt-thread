@@ -1,13 +1,15 @@
-#include <rtthread.h>
 #include <stdio.h>
-#ifdef _WIN32
-#include <stdlib.h>
 #include <string.h>
-#endif
-#include <dfs_def.h>
+#include <stdlib.h>
 
-// #define SD_TRACE     rt_kprintf
-#define SD_TRACE(...)
+#include <rtthread.h>
+#include <dfs.h>
+
+#ifdef DEBUG
+#  define SD_TRACE     rt_kprintf
+#else
+#  define SD_TRACE(...)
+#endif
 
 #define SDCARD_SIM  "sd.bin"
 #define SDCARD_SIZE (16*1024*1024)  //16M
@@ -96,7 +98,7 @@ _err:
     return 0;
 }
 
-static rt_err_t rt_sdcard_control(rt_device_t dev, rt_uint8_t cmd, void *args)
+static rt_err_t rt_sdcard_control(rt_device_t dev, int cmd, void *args)
 {
     struct sdcard_device *sd;
     unsigned int size;

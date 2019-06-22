@@ -17,6 +17,7 @@
 /* SECTION: RT_DEBUG */
 /* Thread Debug */
 #define RT_DEBUG
+#define RT_DEBUG_COLOR
 //#define RT_DEBUG_INIT 1
 #define RT_USING_OVERFLOW_CHECK
 
@@ -49,10 +50,10 @@
 
 /* SECTION: Memory Management */
 /* Using Memory Pool Management*/
-/* #define RT_USING_MEMPOOL */
+#define RT_USING_MEMPOOL
 
 /* Using Dynamic Heap Management */
-//#define RT_USING_HEAP
+#define RT_USING_HEAP
 
 /* Using Small MM */
 #define RT_USING_SMALL_MEM
@@ -68,6 +69,7 @@
 #define RT_USING_DEVICE_IPC
 // <bool name="RT_USING_SERIAL" description="Using Serial" default="true" />
 //#define RT_USING_SERIAL
+#define RT_SERIAL_USING_DMA
 
 /* SECTION: Console options */
 #define RT_USING_CONSOLE

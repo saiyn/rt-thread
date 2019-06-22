@@ -1,8 +1,8 @@
 /**
  * NAT - NAT implementation for lwIP supporting TCP/UDP and ICMP.
  * Copyright (c) 2009 Christian Walter, ?Embedded Solutions, Vienna 2009.
- *
  * Copyright (c) 2010 lwIP project ;-)
+ * COPYRIGHT (C) 2015, RT-Thread Development Team
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,28 +27,6 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  *
- * This file is part of the lwIP TCP/IP stack.
- */
-
-/*
- * File      : ipv4_nat.h
- * This file is part of RT-Thread RTOS
- * COPYRIGHT (C) 2015, RT-Thread Development Team
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
  * Change Logs:
  * Date           Author       Notes
  * 2015-01-26     Hichard      porting to RT-Thread
@@ -67,7 +45,7 @@
 #include "lwip/opt.h"
 
 /** Timer interval at which to call ip_nat_tmr() */
-#define LWIP_NAT_TMR_INTERVAL_SEC        (30*1000)
+#define LWIP_NAT_TMR_INTERVAL_SEC        (30)
 
 #ifdef __cplusplus
 extern "C" {

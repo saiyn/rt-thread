@@ -1,21 +1,7 @@
 /*
- * File      : i2c-bit-ops.c
- * This file is part of RT-Thread RTOS
- * COPYRIGHT (C) 2006 - 2012, RT-Thread Development Team
+ * Copyright (c) 2006-2018, RT-Thread Development Team
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Change Logs:
  * Date           Author        Notes
@@ -146,7 +132,7 @@ static rt_int32_t i2c_writeb(struct rt_i2c_bus_device *bus, rt_uint8_t data)
     rt_int32_t i;
     rt_uint8_t bit;
 
-    struct rt_i2c_bit_ops *ops = bus->priv;
+    struct rt_i2c_bit_ops *ops = (struct rt_i2c_bit_ops *)bus->priv;
 
     for (i = 7; i >= 0; i--)
     {
@@ -173,7 +159,7 @@ static rt_int32_t i2c_readb(struct rt_i2c_bus_device *bus)
 {
     rt_uint8_t i;
     rt_uint8_t data = 0;
-    struct rt_i2c_bit_ops *ops = bus->priv;
+    struct rt_i2c_bit_ops *ops = (struct rt_i2c_bit_ops *)bus->priv;
 
     SDA_H(ops);
     i2c_delay(ops);
@@ -236,7 +222,7 @@ static rt_size_t i2c_send_bytes(struct rt_i2c_bus_device *bus,
 
 static rt_err_t i2c_send_ack_or_nack(struct rt_i2c_bus_device *bus, int ack)
 {
-    struct rt_i2c_bit_ops *ops = bus->priv;
+    struct rt_i2c_bit_ops *ops = (struct rt_i2c_bit_ops *)bus->priv;
 
     if (ack)
         SET_SDA(ops, 0);
@@ -296,7 +282,7 @@ static rt_int32_t i2c_send_address(struct rt_i2c_bus_device *bus,
                                    rt_uint8_t                addr,
                                    rt_int32_t                retries)
 {
-    struct rt_i2c_bit_ops *ops = bus->priv;
+    struct rt_i2c_bit_ops *ops = (struct rt_i2c_bit_ops *)bus->priv;
     rt_int32_t i;
     rt_err_t ret = 0;
 
@@ -320,7 +306,7 @@ static rt_err_t i2c_bit_send_address(struct rt_i2c_bus_device *bus,
 {
     rt_uint16_t flags = msg->flags;
     rt_uint16_t ignore_nack = msg->flags & RT_I2C_IGNORE_NACK;
-    struct rt_i2c_bit_ops *ops = bus->priv;
+    struct rt_i2c_bit_ops *ops = (struct rt_i2c_bit_ops *)bus->priv;
 
     rt_uint8_t addr1, addr2;
     rt_int32_t retries;
@@ -383,7 +369,7 @@ static rt_size_t i2c_bit_xfer(struct rt_i2c_bus_device *bus,
                               rt_uint32_t               num)
 {
     struct rt_i2c_msg *msg;
-    struct rt_i2c_bit_ops *ops = bus->priv;
+    struct rt_i2c_bit_ops *ops = (struct rt_i2c_bit_ops *)bus->priv;
     rt_int32_t i, ret;
     rt_uint16_t ignore_nack;
 

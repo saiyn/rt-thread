@@ -17,6 +17,7 @@
 #define RT_TICK_PER_SECOND	100
 // <section name="RT_DEBUG" description="Kernel Debug Configuration" default="true" >
 #define RT_DEBUG
+#define RT_DEBUG_COLOR
 // <bool name="RT_THREAD_DEBUG" description="Thread debug enable" default="false" />
 // #define RT_THREAD_DEBUG
 // <bool name="RT_USING_OVERFLOW_CHECK" description="Thread stack over flow detect" default="true" />
@@ -114,7 +115,7 @@
 // <item description="LFN1">2</item>
 // </integer>
 #define RT_DFS_ELM_USE_LFN	1
-// <integer name="RT_DFS_ELM_MAX_LFN" description="Maximal size of file name length" default="256" />
+// <integer name="RT_DFS_ELM_MAX_LFN" description="Maximal size of file name length" default="255" />
 #define RT_DFS_ELM_MAX_LFN	64
 // <bool name="RT_USING_DFS_YAFFS2" description="Using YAFFS2" default="false" />
 // #define RT_USING_DFS_YAFFS2
@@ -185,8 +186,6 @@
 
 // <section name="RT_USING_MODULE" description="Application module" default="true" >
 // #define RT_USING_MODULE
-// <bool name="RT_USING_LIBDL" description="Using dynamic library" default="true" />
-// #define RT_USING_LIBDL
 // </section>
 
 // <section name="RT_USING_RTGUI" description="RTGUI, a graphic user interface" default="true" >
