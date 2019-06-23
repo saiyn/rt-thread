@@ -149,6 +149,35 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
 
 }
 
+void HAL_SRAM_MspInit(SRAM_HandleTypeDef *hsram)
+{
+	GPIO_InitTypeDef GPIO_Init_Structure;
+
+	/* Enable FSMC clock */
+	__HAL_RCC_FSMC_CLK_ENABLE();
+
+
+	/* Enable GPIOS clock */
+	__HAL_RCC_GPIOD_CLK_ENABLE();
+	__HAL_RCC_GPIOE_CLK_ENABLE();
+	__HAL_RCC_GPIOG_CLK_ENABLE();
+	__HAL_RCC_GPIOB_CLK_ENABLE(); // For backnight of LCD
+
+	/* common GPIO configuration */
+	GPIO_Init_Structure.Mode = GPIO_MODE_AF_PP;
+	gpio_Init_Structure.Pull = GPIO_PULLUP;
+	GPIO_Init_Structure.Speed = GPIO_SPEED_FREQ_HIGH;
+
+
+	GPIO_Init_Structure.Pin = GPIO_PIN_O | GPIO_PIN_1 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_8 |
+				  GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_14 | GPIO_PIN_15;
+
+	HAL_GPIO_Init(GPIOD, &GPIO_Init_Structure);
+	
+	
+
+}
+
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
