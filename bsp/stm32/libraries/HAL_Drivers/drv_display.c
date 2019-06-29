@@ -4,12 +4,13 @@
 #include "board.h"
 
 #define RT_DISP_CMD_DRAW_POINT 0x13
+#define RT_DISP_CMD_DRAW_LINE 0x14
 
 #define DIR_HORIZON 	(1)
 #define DIR_VERTICAL 	(0)
 
 
-#define POINT_COLOR	(0x0000)
+#define POINT_COLOR	(0x0505)
 #define BACK_COLOR	(0xffff)
 
 typedef struct
@@ -19,7 +20,7 @@ typedef struct
 }lcd_typedef;
 
 
-#define LCD_BASE	((unsigned int)(0x6c000000 | 0x000007ef))
+#define LCD_BASE	((unsigned int)(0x6c000000 | 0x000007fe))
 #define LCD		((lcd_typedef *)LCD_BASE)
 
 
@@ -36,15 +37,19 @@ typedef struct
 	LCD->lcd_ram = d;	\
 }while(0)
 
-#define LCD_READ_REG(r)  ({	\
-	unsigned short d;	\
-	LCD->lcd_reg = r;	\
-	delay_us(5);		\
-	d = LCD->lcd_ram;	\
-	d;			\
+#define LCD_READ_REG(r)  ({		\
+	volatile unsigned short d;	\
+	LCD->lcd_reg = r;		\
+	delay_us(5);			\
+	d = LCD->lcd_ram;		\
+	d;				\
 })
 
-
+#define LCD_READ_DATA() ({		\
+	volatile unsigned short d;	\
+	d = LCD->lcd_ram;		\
+	d;				\
+})
 
 
 
@@ -74,33 +79,50 @@ static struct rt_device _display;
 static lcd_dev_t _lcd;
 
 
+
 void delay_us(rt_uint32_t us)
-{
+{	
+	int i;
+
 	while(us--){
-		__NOP();
+		for(i = 0; i < 5; i++)
+		{
+			__NOP();
+		}
 	}
 }
 
 
 void delay_ms(rt_uint32_t ms)
 {
+	int i;
+
 	while(ms--)
 	{
-
-		int i;
-		for(i = 0; i < 1000; i++)
+		for(i = 0; i < 8929; i++)
 		{
 			__NOP();
 		}
+
 	}
 
 }
 
 
+static unsigned short lcd_read_reg(unsigned short reg)
+{
+	LCD_WRITE_REG(reg);
+
+	delay_us(5);
+
+	
+
+	return LCD->lcd_ram;
+}
 
 static void lcd_set_cursor(unsigned short x, unsigned short y)
 {
-	if(_lcd.dir == DIR_HORIZON)
+	if(_lcd.dir == DIR_VERTICAL)
 	{
 		x = _lcd.w - 1 - x;
 		LCD_WRITE_REG(_lcd.cmd_setx);
@@ -126,23 +148,95 @@ static void lcd_set_cursor(unsigned short x, unsigned short y)
 	LCD_WRITE_DATA((_lcd.h - 1) & 0xff);
 }
 
-
-
-static void _dis_draw_point(disp_arg_t *arg)
+static void do_draw_point(unsigned short x, unsigned short y)
 {
-	lcd_set_cursor(arg->x0, arg->y0);
+
+	rt_kprintf("point:%d-%d\n", x, y);
+
+	lcd_set_cursor(x, y);
 	LCD_WRITE_PREPARE;
 	LCD->lcd_ram = POINT_COLOR;
 }
 
+static void _dis_draw_point(disp_arg_t *arg)
+{
+	rt_kprintf("cursor set to %d-%d\n", arg->x0, arg->y0);
+
+	do_draw_point(arg->x0,arg->y0);
+}
+
+static void _dis_draw_line(disp_arg_t *arg)
+{
+	int i;
+	int xerr = 0, yerr = 0, delta_x, delta_y, distance;
+	int incx, incy, row, col;
+
+	delta_x = arg->x1 - arg->x0;
+	delta_y = arg->y1 - arg->y0;
+
+	row = arg->x0;
+	col = arg->y0;
+
+	if(delta_x > 0)
+		incx = 1;
+	else if(delta_x == 0)
+		incx = 0;
+	else{
+		incx = -1;
+		delta_x = -delta_x;
+	}
+
+	if(delta_y > 0)
+		incy = 1;
+	else if(delta_y == 0)
+		incy = 0;
+	else{
+		incy = -1;
+		delta_y = -delta_y;
+	}
+
+	if(delta_x > delta_y)
+		distance = delta_x;
+	else
+		distance = delta_y;
+	
+	for(i = 0; i < distance + 1; i++)
+	{
+		do_draw_point(row, col);
+
+		xerr += delta_x;
+		yerr += delta_y;
+
+		if(xerr > distance)
+		{
+			xerr -= distance;
+			row += incx;
+		}
+
+		if(yerr > distance)
+		{
+			yerr -= distance;
+			col += incy;
+		}
+	}
+
+	
+}
 
 static rt_err_t _disp_control(rt_device_t dev, int cmd, void *args)
 {
 	switch(cmd)
 	{
 		case RT_DISP_CMD_DRAW_POINT:
+			rt_kprintf("disp: receive draw point cmd\n");
 			_dis_draw_point((disp_arg_t *)args);
 		break;
+
+		case RT_DISP_CMD_DRAW_LINE:
+			rt_kprintf("disp: receive draw line cmd\n");
+			_dis_draw_line((disp_arg_t *)args);
+		break;
+
 
 		default:
 			rt_kprintf("NO support yet - %s:(%d)\r\n", __FUNCTION__, cmd);
@@ -178,7 +272,7 @@ static rt_err_t _disp_init(struct rt_device *dev)
 	wTiming.DataLatency = 0x00;
 	wTiming.AccessMode = FSMC_ACCESS_MODE_A;
 
-	hsram.Init.NSBank = FSMC_NORSRAM_BANK1;
+	hsram.Init.NSBank = FSMC_NORSRAM_BANK4;
 	hsram.Init.DataAddressMux = FSMC_DATA_ADDRESS_MUX_DISABLE;
 	hsram.Init.MemoryType = FSMC_MEMORY_TYPE_SRAM;
 	hsram.Init.MemoryDataWidth = FSMC_NORSRAM_MEM_BUS_WIDTH_16;
@@ -197,6 +291,11 @@ static rt_err_t _disp_init(struct rt_device *dev)
 		rt_kprintf("fsmc for lcd init failed");
 		return -1;
 	}
+
+	rt_kprintf("disp lowlevel init done\n");
+
+
+	delay_ms(50);
 
 	return 0;
 }
@@ -254,7 +353,9 @@ void LCD_Scan_Dir(unsigned char dir)
 
 	if(dir == D2U_L2R)
 	{
-		regval |= (0 << 7) | (0 << 6) | (1 << 5);
+		regval |= (0 << 7) | (0 << 6) | (0 << 5);
+
+		rt_kprintf("scan dir set to d2u_l2r\n");
 	}
 
 	dirreg = 0x36;
@@ -280,12 +381,13 @@ void LCD_Set_Dir(unsigned char d)
 	if(d == DIR_HORIZON)
 	{
 		_lcd.dir = d;
-		_lcd.cmd_setx = 0x2a00;
-		_lcd.cmd_sety = 0x2b00;
-		_lcd.cmd_wram = 0x2c00;
+		_lcd.cmd_setx = 0x2a;
+		_lcd.cmd_sety = 0x2b;
+		_lcd.cmd_wram = 0x2c;
 		_lcd.w = 800;
 		_lcd.h = 480;
 
+		rt_kprintf("dir set to horizon\n");
 	}
 
 	LCD_Scan_Dir(DET_SCAN_DIR);
@@ -313,9 +415,15 @@ void LCD_Clear(unsigned short color)
 
 static rt_err_t _disp_open(struct rt_device *dev, rt_uint16_t oflag)
 {
-	_lcd.id = LCD_READ_REG(0x0000);
+	LCD_WRITE_REG(0xa1);
+	_lcd.id = LCD_READ_DATA();
+	_lcd.id = LCD_READ_DATA();
 
-	rt_kprintf("get lcd id:0x%x\n", _lcd.id);
+	_lcd.id <<= 8;
+	_lcd.id |= LCD_READ_DATA();
+
+	rt_kprintf("ff get lcd id:0x%x\n", _lcd.id);
+
 
 	LCD_WRITE_REG(0xE2);
 	LCD_WRITE_DATA(0x1d);
@@ -423,6 +531,7 @@ int rt_hw_display_init(void)
 	_display.type = RT_Device_Class_Miscellaneous;
 	_display.rx_indicate = RT_NULL;
 	_display.tx_complete = RT_NULL;
+
 
 #ifdef RT_USING_DEVICE_OPS
 	_display.ops = &disp_ops;

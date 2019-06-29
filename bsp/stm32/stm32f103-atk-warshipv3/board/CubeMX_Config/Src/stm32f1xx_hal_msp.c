@@ -117,6 +117,22 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
 
   /* USER CODE END USART1_MspInit 1 */
   }
+  else if(huart->Instance == USART2)
+  {
+	__HAL_RCC_USART2_CLK_ENABLE();
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+
+	GPIO_InitStruct.Pin = GPIO_PIN_2;
+	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+	GPIO_InitStruct.Pin = GPIO_PIN_3;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  }
 
 }
 
@@ -155,6 +171,7 @@ void HAL_SRAM_MspInit(SRAM_HandleTypeDef *hsram)
 
 	/* Enable FSMC clock */
 	__HAL_RCC_FSMC_CLK_ENABLE();
+	__HAL_RCC_SRAM_CLK_ENABLE(); 
 
 
 	/* Enable GPIOS clock */
@@ -181,10 +198,14 @@ void HAL_SRAM_MspInit(SRAM_HandleTypeDef *hsram)
 
 
 	GPIO_Init_Structure.Pin = GPIO_PIN_0 | GPIO_PIN_12;
-	GPIO_Init_Structure.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_Init_Structure.Speed = GPIO_SPEED_FREQ_HIGH;
+	//GPIO_Init_Structure.Mode = GPIO_MODE_AF_PP;
+	//GPIO_Init_Structure.Speed = GPIO_SPEED_FREQ_HIGH;
 	
 	HAL_GPIO_Init(GPIOG, &GPIO_Init_Structure);
+
+
+	GPIO_Init_Structure.Mode = GPIO_MODE_OUTPUT_PP;
+	HAL_GPIO_Init(GPIOB, &GPIO_Init_Structure);
 
 }
 

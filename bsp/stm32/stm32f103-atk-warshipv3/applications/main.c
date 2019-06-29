@@ -20,6 +20,11 @@
 
 static rt_device_t lcd;
 
+typedef struct {
+	unsigned short x0,y0,x1,y1,color;
+}lcd_arg_t;
+
+
 
 int main(void)
 {
@@ -27,10 +32,6 @@ int main(void)
     rt_err_t res = RT_EOK;
 	
    
-     struct{
-	unsigned short x0, y0, x1, y1, color;
-     }point = {400, 200,600, 300, 0xffff};    
-
 
     /* set LED0 pin mode to output */
     rt_pin_mode(LED0_PIN, PIN_MODE_OUTPUT);
@@ -44,6 +45,10 @@ int main(void)
 	rt_kprintf("find display failed\n");
 	return RT_ERROR;
     }
+    else
+    {
+	rt_kprintf("find display device\n");
+    }
 
 
     res = rt_device_init(lcd);
@@ -52,17 +57,33 @@ int main(void)
 	rt_kprintf("init display failed\n");
 	return res;
     }
+    else
+    {
+	rt_kprintf("display init ok\n");
+    }
 
+#if 1   
     res = rt_device_open(lcd, 0);
     if(res != RT_EOK)
     {
 	rt_kprintf("open display failed\n");
 	return res;
     }
+    else
+    {
+	rt_kprintf("display open ok\n");
+    }	
  
-    res = rt_device_control(lcd, 0x13, &point);   
+    lcd_arg_t line = {20, 10, 200, 300, 0};
+
+    res = rt_device_control(lcd, 0x14, &line);  
 
 
+     lcd_arg_t point = {100, 100, 400, 3000, 0};
+
+     rt_device_control(lcd, 0x13, &point);
+	
+#endif
     while (count++)
     {
         rt_pin_write(LED0_PIN, PIN_HIGH);
