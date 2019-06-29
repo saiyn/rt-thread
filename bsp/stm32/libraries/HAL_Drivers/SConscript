@@ -82,7 +82,12 @@ if GetDepend(['BSP_USING_SDIO']):
 if GetDepend(['BSP_USING_USBD_FS']):
     src += ['drv_usbd_fs.c']
 
+
+src += ['drv_display.c']
+
 src += ['drv_common.c']
+
+
 
 path =  [cwd]
 path += [cwd + '/config']

@@ -165,16 +165,26 @@ void HAL_SRAM_MspInit(SRAM_HandleTypeDef *hsram)
 
 	/* common GPIO configuration */
 	GPIO_Init_Structure.Mode = GPIO_MODE_AF_PP;
-	gpio_Init_Structure.Pull = GPIO_PULLUP;
+	GPIO_Init_Structure.Pull = GPIO_PULLUP;
 	GPIO_Init_Structure.Speed = GPIO_SPEED_FREQ_HIGH;
 
 
-	GPIO_Init_Structure.Pin = GPIO_PIN_O | GPIO_PIN_1 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_8 |
+	GPIO_Init_Structure.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_8 |
 				  GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_14 | GPIO_PIN_15;
 
 	HAL_GPIO_Init(GPIOD, &GPIO_Init_Structure);
 	
 	
+	GPIO_Init_Structure.Pin = GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13 |
+				  GPIO_PIN_14 | GPIO_PIN_15;
+	HAL_GPIO_Init(GPIOE, &GPIO_Init_Structure);
+
+
+	GPIO_Init_Structure.Pin = GPIO_PIN_0 | GPIO_PIN_12;
+	GPIO_Init_Structure.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_Init_Structure.Speed = GPIO_SPEED_FREQ_HIGH;
+	
+	HAL_GPIO_Init(GPIOG, &GPIO_Init_Structure);
 
 }
 

@@ -107,6 +107,9 @@ void rt_hw_us_delay(rt_uint32_t us)
     } while(delta < us_tick * us);
 }
 
+extern int rt_hw_display_init();
+
+
 /**
  * This function will initial STM32 board.
  */
@@ -143,6 +146,8 @@ RT_WEAK void rt_hw_board_init()
 #ifdef RT_USING_SERIAL
     rt_hw_usart_init();
 #endif
+
+    rt_hw_display_init();
 
     /* Set the shell console output device */
 #ifdef RT_USING_CONSOLE

@@ -17,13 +17,51 @@
 /* defined the LED0 pin: PE5 */
 #define LED1_PIN    GET_PIN(E, 5)
 
+
+static rt_device_t lcd;
+
+
 int main(void)
 {
     int count = 1;
+    rt_err_t res = RT_EOK;
+	
+   
+     struct{
+	unsigned short x0, y0, x1, y1, color;
+     }point = {400, 200,600, 300, 0xffff};    
+
+
     /* set LED0 pin mode to output */
     rt_pin_mode(LED0_PIN, PIN_MODE_OUTPUT);
     /* set LED1 pin mode to output */
     rt_pin_mode(LED1_PIN, PIN_MODE_OUTPUT);
+
+
+    lcd = rt_device_find("display");
+    if(!lcd)
+    {
+	rt_kprintf("find display failed\n");
+	return RT_ERROR;
+    }
+
+
+    res = rt_device_init(lcd);
+    if(res != RT_EOK)
+    {
+	rt_kprintf("init display failed\n");
+	return res;
+    }
+
+    res = rt_device_open(lcd, 0);
+    if(res != RT_EOK)
+    {
+	rt_kprintf("open display failed\n");
+	return res;
+    }
+ 
+    res = rt_device_control(lcd, 0x13, &point);   
+
 
     while (count++)
     {
