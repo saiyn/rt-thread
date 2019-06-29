@@ -79,9 +79,14 @@ int main(void)
     res = rt_device_control(lcd, 0x14, &line);  
 
 
-     lcd_arg_t point = {100, 100, 400, 3000, 0};
+     lcd_arg_t point = {100, 100, 400, 300, 0};
 
      rt_device_control(lcd, 0x13, &point);
+
+
+     lcd_arg_t rectangle = {300, 50, 500, 200, 0};
+
+     rt_device_control(lcd, 0x15, &rectangle);
 	
 #endif
     while (count++)

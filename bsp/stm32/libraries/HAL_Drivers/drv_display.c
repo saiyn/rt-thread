@@ -5,6 +5,8 @@
 
 #define RT_DISP_CMD_DRAW_POINT 0x13
 #define RT_DISP_CMD_DRAW_LINE 0x14
+#define RT_DISP_CMD_RECTANGLE 0x15
+
 
 #define DIR_HORIZON 	(1)
 #define DIR_VERTICAL 	(0)
@@ -165,17 +167,17 @@ static void _dis_draw_point(disp_arg_t *arg)
 	do_draw_point(arg->x0,arg->y0);
 }
 
-static void _dis_draw_line(disp_arg_t *arg)
+static void do_draw_line(unsigned short x0, unsigned short x1, unsigned short y0, unsigned short y1)
 {
 	int i;
 	int xerr = 0, yerr = 0, delta_x, delta_y, distance;
 	int incx, incy, row, col;
 
-	delta_x = arg->x1 - arg->x0;
-	delta_y = arg->y1 - arg->y0;
+	delta_x = x1 - x0;
+	delta_y = y1 - y0;
 
-	row = arg->x0;
-	col = arg->y0;
+	row = x0;
+	col = y0;
 
 	if(delta_x > 0)
 		incx = 1;
@@ -223,6 +225,24 @@ static void _dis_draw_line(disp_arg_t *arg)
 	
 }
 
+
+
+static void _dis_draw_line(disp_arg_t *arg)
+{
+	do_draw_line(arg->x0, arg->x1, arg->y0, arg->y1);
+}
+
+
+static void _dis_draw_rectangle(disp_arg_t *arg)
+{
+	do_draw_line(arg->x0,  arg->x1, arg->y0, arg->y0);
+	do_draw_line(arg->x0, arg->x0, arg->y0, arg->y1);
+	do_draw_line(arg->x0, arg->x1, arg->y1, arg->y1);
+	do_draw_line(arg->x1, arg->x1, arg->y0 ,arg->y1);
+	
+}
+
+
 static rt_err_t _disp_control(rt_device_t dev, int cmd, void *args)
 {
 	switch(cmd)
@@ -235,6 +255,10 @@ static rt_err_t _disp_control(rt_device_t dev, int cmd, void *args)
 		case RT_DISP_CMD_DRAW_LINE:
 			rt_kprintf("disp: receive draw line cmd\n");
 			_dis_draw_line((disp_arg_t *)args);
+		break;
+
+		case RT_DISP_CMD_RECTANGLE:
+			_dis_draw_rectangle((disp_arg_t *)args);
 		break;
 
 
