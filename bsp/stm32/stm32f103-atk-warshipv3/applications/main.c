@@ -12,7 +12,9 @@
 #include <rtdevice.h>
 #include <board.h>
 
-#include "w25q.h"
+#include "w25Q.h"
+
+#include "font.h"
 
 /* defined the LED0 pin: PB5 */
 #define LED0_PIN    GET_PIN(B, 5)
@@ -92,6 +94,9 @@ int main(void)
 
 
      w25q_init();
+
+
+     Font_init();
 	
 #endif
     while (count++)
