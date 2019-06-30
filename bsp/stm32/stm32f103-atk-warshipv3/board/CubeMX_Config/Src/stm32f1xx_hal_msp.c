@@ -209,6 +209,26 @@ void HAL_SRAM_MspInit(SRAM_HandleTypeDef *hsram)
 
 }
 
+
+void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
+{
+	GPIO_InitTypeDef GPIO_Init_Structure;
+
+	if(hspi->Instance == SPI2)
+	{
+		__HAL_RCC_SPI2_CLK_ENABLE();
+
+		GPIO_Init_Structure.Mode = GPIO_MODE_AF_PP;                                             	
+        	GPIO_Init_Structure.Pull = GPIO_PULLUP;
+		GPIO_Init_Structure.Speed = GPIO_SPEED_FREQ_HIGH;
+        	GPIO_Init_Structure.Pin = GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
+		
+		HAL_GPIO_Init(GPIOB, &GPIO_Init_Structure);
+
+	}
+}
+
+
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */

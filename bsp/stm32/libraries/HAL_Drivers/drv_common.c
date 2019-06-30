@@ -14,6 +14,8 @@
 #include "drv_usart.h"
 #endif
 
+#include "drv_spi.h"
+
 #ifdef RT_USING_FINSH
 #include <finsh.h>
 static void reboot(uint8_t argc, char **argv)
@@ -157,6 +159,8 @@ RT_WEAK void rt_hw_board_init()
 #ifdef RT_USING_COMPONENTS_INIT
     rt_components_board_init();
 #endif
+
+    rt_hw_spi_device_attach("spi2", "spi20", GPIOB, GPIO_PIN_12);
 
 
     rt_hw_display_init();

@@ -12,6 +12,8 @@
 #include <rtdevice.h>
 #include <board.h>
 
+#include "w25q.h"
+
 /* defined the LED0 pin: PB5 */
 #define LED0_PIN    GET_PIN(B, 5)
 /* defined the LED0 pin: PE5 */
@@ -87,6 +89,9 @@ int main(void)
      lcd_arg_t rectangle = {300, 50, 500, 200, 0};
 
      rt_device_control(lcd, 0x15, &rectangle);
+
+
+     w25q_init();
 	
 #endif
     while (count++)
