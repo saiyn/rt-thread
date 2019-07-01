@@ -27,5 +27,8 @@ int Font_init(void);
 
 
 
+void Font_show_str(rt_uint16_t x, rt_uint16_t y, rt_uint16_t w, rt_uint16_t h, rt_uint8_t *str, rt_uint8_t size, rt_uint8_t mode);
+
+
 
 #endif

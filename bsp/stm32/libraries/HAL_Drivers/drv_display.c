@@ -6,7 +6,7 @@
 #define RT_DISP_CMD_DRAW_POINT 0x13
 #define RT_DISP_CMD_DRAW_LINE 0x14
 #define RT_DISP_CMD_RECTANGLE 0x15
-
+#define RT_DISP_CMD_DRAW_FAST_POINT 0x16
 
 #define DIR_HORIZON 	(1)
 #define DIR_VERTICAL 	(0)
@@ -152,18 +152,29 @@ static void lcd_set_cursor(unsigned short x, unsigned short y)
 
 static void do_draw_point(unsigned short x, unsigned short y)
 {
-
-	rt_kprintf("point:%d-%d\n", x, y);
-
 	lcd_set_cursor(x, y);
 	LCD_WRITE_PREPARE;
 	LCD->lcd_ram = POINT_COLOR;
 }
 
+
+static void _dis_draw_fast_point(disp_arg_t *arg)
+{
+	LCD_WRITE_REG(_lcd.cmd_setx);
+	LCD_WRITE_DATA(arg->x0 >> 8);LCD_WRITE_DATA(arg->x0 & 0xff);
+	LCD_WRITE_DATA(arg->x0 >> 8);LCD_WRITE_DATA(arg->x0 & 0xff);
+
+	LCD_WRITE_REG(_lcd.cmd_sety);
+	LCD_WRITE_DATA(arg->y0 >> 8);LCD_WRITE_DATA(arg->y0 & 0xff);
+	LCD_WRITE_DATA(arg->y0 >> 8);LCD_WRITE_DATA(arg->y0 & 0xff);
+
+
+	LCD_WRITE_PREPARE;
+	LCD->lcd_ram = arg->color;
+}
+
 static void _dis_draw_point(disp_arg_t *arg)
 {
-	rt_kprintf("cursor set to %d-%d\n", arg->x0, arg->y0);
-
 	do_draw_point(arg->x0,arg->y0);
 }
 
@@ -259,6 +270,10 @@ static rt_err_t _disp_control(rt_device_t dev, int cmd, void *args)
 
 		case RT_DISP_CMD_RECTANGLE:
 			_dis_draw_rectangle((disp_arg_t *)args);
+		break;
+
+		case RT_DISP_CMD_DRAW_FAST_POINT:
+			_dis_draw_fast_point((disp_arg_t *)args);
 		break;
 
 

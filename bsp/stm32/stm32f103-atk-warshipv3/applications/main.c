@@ -16,6 +16,8 @@
 
 #include "font.h"
 
+#include "lcd.h"
+
 /* defined the LED0 pin: PB5 */
 #define LED0_PIN    GET_PIN(B, 5)
 /* defined the LED0 pin: PE5 */
@@ -42,7 +44,7 @@ int main(void)
     /* set LED1 pin mode to output */
     rt_pin_mode(LED1_PIN, PIN_MODE_OUTPUT);
 
-
+#if 0
     lcd = rt_device_find("display");
     if(!lcd)
     {
@@ -66,7 +68,7 @@ int main(void)
 	rt_kprintf("display init ok\n");
     }
 
-#if 1   
+   
     res = rt_device_open(lcd, 0);
     if(res != RT_EOK)
     {
@@ -91,14 +93,17 @@ int main(void)
      lcd_arg_t rectangle = {300, 50, 500, 200, 0};
 
      rt_device_control(lcd, 0x15, &rectangle);
-
+#endif
 
      w25q_init();
 
 
      Font_init();
+
+     LCD_init();
+
+     Font_show_str(100, 100, 200, 16, "赛亚人",16, 0);  
 	
-#endif
     while (count++)
     {
         rt_pin_write(LED0_PIN, PIN_HIGH);
