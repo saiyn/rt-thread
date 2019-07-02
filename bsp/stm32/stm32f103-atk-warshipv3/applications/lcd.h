@@ -6,7 +6,7 @@ void LCD_init();
 
 void LCD_fast_drawPoint(rt_uint16_t x, rt_uint16_t y, rt_uint16_t color);
 
-
+void LCD_show_ui();
 
 
 

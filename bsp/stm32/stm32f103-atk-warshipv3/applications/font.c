@@ -49,8 +49,12 @@ static void get_HzMat(rt_uint8_t *code, rt_uint8_t *mat, rt_uint8_t size)
 		for(i = 0; i < csize; i++)
 			*mat++ = 0x00;
 
+		rt_kprintf("get hzmat error, qh:0x%x, ql:0x%x\n", qh, ql);
+
 		return;
 	}
+
+	rt_kprintf("in hzmat, qh:0x%x, ql:0x%x\n", qh, ql);
 
 	if(ql < 0x7f)
 		ql -= 0x40;
@@ -59,7 +63,7 @@ static void get_HzMat(rt_uint8_t *code, rt_uint8_t *mat, rt_uint8_t size)
 
 	qh -= 0x81;
 
-	foffset = ((unsigned long)190 *qh + ql) * csize;
+	foffset = ((unsigned long)(190 *qh) + ql) * csize;
 
 	switch(size)
 	{
@@ -94,6 +98,7 @@ void Font_show_font(rt_uint16_t x, rt_uint16_t y, rt_uint8_t *font, rt_uint8_t s
 		rt_kprintf("unsupported font size:%d\n", size);
 		return;
 	}
+
 
 	get_HzMat(font, dzk, size);
 

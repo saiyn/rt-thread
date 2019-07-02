@@ -102,7 +102,9 @@ int main(void)
 
      LCD_init();
 
-     Font_show_str(100, 100, 200, 16, "èµ›äºšäºº",16, 0);  
+    // Font_show_str(100, 100, 200, 24, "ÓÍÎÂ",24, 0);  
+
+     LCD_show_ui();
 	
     while (count++)
     {
