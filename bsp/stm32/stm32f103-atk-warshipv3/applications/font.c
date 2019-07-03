@@ -144,7 +144,27 @@ void Font_show_str(rt_uint16_t x, rt_uint16_t y, rt_uint16_t w, rt_uint16_t h, r
 				bHz = 1;
 			else
 			{
+				if(x > (x0 + w - size / 2))
+				{
+					y += size;
+					x = x0;
+				}
 
+				if(y > (y0 + h - size))
+					break;
+
+				if(*str == 13)
+				{
+					y += size;
+					x = x0;
+					str++;
+				}
+				else
+					LCD_show_char(x, y, *str, size, mode);
+
+
+				str++;
+				x += size / 2;
 			}
 		}
 		else

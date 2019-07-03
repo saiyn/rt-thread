@@ -14,7 +14,6 @@
 
 #include "w25Q.h"
 
-#include "font.h"
 
 #include "lcd.h"
 
@@ -31,6 +30,7 @@ typedef struct {
 }lcd_arg_t;
 
 
+extern int Font_init(void);
 
 int main(void)
 {

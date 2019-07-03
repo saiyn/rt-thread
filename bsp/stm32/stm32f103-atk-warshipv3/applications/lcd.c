@@ -2,7 +2,7 @@
 #include <rtdevice.h>
 
 #include "lcd.h"
-#include "font.h"
+//#include "font.h"
 
 
 #define LCD_DRAW_RECTANGLE	(0x15)
@@ -11,8 +11,10 @@
 
 
 
+extern void Font_show_str(rt_uint16_t x, rt_uint16_t y, rt_uint16_t w, rt_uint16_t h, rt_uint8_t *str, rt_uint8_t size, rt_uint8_t mode);
 
 
+extern const unsigned char asc2_2412[95][36];	  
 
 
 typedef struct{
@@ -67,6 +69,60 @@ void LCD_draw_rectangle(rt_uint16_t x0, rt_uint16_t y0, rt_uint16_t x1, rt_uint1
 
 }
 
+
+
+void LCD_show_char(rt_uint16_t x, rt_uint16_t y, rt_uint8_t c, rt_uint8_t size, rt_uint8_t mode)
+{
+	rt_uint8_t tmp, t, t1;
+	rt_uint16_t y0 = y;
+	rt_uint8_t csize = (size / 8 + ((size % 8) ? 1:0)) * (size / 2);
+
+	c = c - ' ';
+
+	for(t = 0; t < csize; t++)
+	{
+		if(size == 24)
+		{
+			tmp = asc2_2412[c][t];
+		}
+		else
+		{
+
+			rt_kprintf("invlaid size in lcd_show_char\n");
+			return;
+		}
+
+		for(t1 = 0; t1 < 8; t1++)
+		{
+			if(tmp & 0x80)
+				LCD_fast_drawPoint(x, y, POINT_COLOR);
+			else if(mode == 0)
+				LCD_fast_drawPoint(x, y, BACK_COLOR);
+
+			tmp <<= 1;
+			y++;
+
+			if(y >= 480)
+				return;
+
+			if((y - y0) == size)
+			{
+				y = y0;
+				x++;
+
+				if(x >= 800)
+					return;
+
+				break;
+			}
+			
+		}
+	}
+
+}
+
+
+
 #define MENU_BAR_H		(80)
 #define LEFT_RIGHT_ALIAN	(50)
 #define CENTER_ALIAN		(50)
@@ -87,14 +143,20 @@ void LCD_show_ui(void)
 		y0 = MENU_BAR_H;
 
 		LCD_draw_rectangle(x0, y0, x0+MAIN_BOX_W, y0+MAIN_BOX_H, 0x0000, 0);
+		LCD_draw_rectangle(x0+1, y0+1, x0+MAIN_BOX_W - 1, y0+MAIN_BOX_H - 1, 0x0000, 0);
 
 
-    		Font_show_str(x0 + (MAIN_BOX_W / 2) - 10, y0 + MAIN_BOX_H + 10, 200, 24, "油温",24, 0);  
+    		Font_show_str(x0 + (MAIN_BOX_W / 2) - 20, y0 + MAIN_BOX_H + 10, 200, 24, "油温",24, 0);  
+
+
+		Font_show_str(x0 + (MAIN_BOX_W / 2) - 25, y0 + MAIN_BOX_H / 2, 200, 24,"85.5", 24, 0);
 
 		LCD_draw_rectangle(x0, y0 + MAIN_BOX_CMNT_H + MAIN_BOX_H, x0 + MAIN_BOX_W, y0 + MAIN_BOX_H*2 + MAIN_BOX_CMNT_H, 0xf5f5, 0);
+		LCD_draw_rectangle(x0+1, y0 + MAIN_BOX_CMNT_H + MAIN_BOX_H + 1, x0 + MAIN_BOX_W - 1, y0 + MAIN_BOX_H*2 + MAIN_BOX_CMNT_H - 1, 0xf5f5, 0);
 
-    		Font_show_str(x0 + (MAIN_BOX_W / 2) - 10, y0 + MAIN_BOX_CMNT_H + MAIN_BOX_H*2 + 1 , 200, 24, "转速",24, 0);  
-
+    		Font_show_str(x0 + (MAIN_BOX_W / 2) - 20, y0 + MAIN_BOX_CMNT_H + MAIN_BOX_H*2 + 1 , 200, 24, "转速",24, 0);  
+		
+		Font_show_str(x0 + (MAIN_BOX_W / 2) - 50, y0 + MAIN_BOX_CMNT_H + MAIN_BOX_H + MAIN_BOX_H / 2, 200, 24,"240r/h", 24, 0);
 
 	}
 
