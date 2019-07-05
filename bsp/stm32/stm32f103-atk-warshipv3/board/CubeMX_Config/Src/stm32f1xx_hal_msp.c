@@ -229,6 +229,36 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 }
 
 
+
+void HAL_SD_MspInit(SD_HandleTypeDef *hsd)
+{
+	GPIO_InitTypeDef GPIO_Init_Structure;
+
+	__HAL_RCC_SDIO_CLK_ENABLE(); 
+	__HAL_RCC_GPIOD_CLK_ENABLE();
+
+	GPIO_Init_Structure.Mode = GPIO_MODE_AF_PP;
+	GPIO_Init_Structure.Speed = GPIO_SPEED_FREQ_HIGH;
+	GPIO_Init_Structure.Pin = GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12;
+
+	HAL_GPIO_Init(GPIOC, &GPIO_Init_Structure);
+
+	GPIO_Init_Structure.Pin = GPIO_PIN_2;
+	HAL_GPIO_Init(GPIOD, &GPIO_Init_Structure);
+
+	GPIO_Init_Structure.Mode = GPIO_MODE_AF_PP;
+	GPIO_Init_Structure.Pull = GPIO_PULLUP;
+	GPIO_Init_Structure.Pin = GPIO_PIN_7;
+	HAL_GPIO_Init(GPIOD, &GPIO_Init_Structure);
+
+}
+
+
+
+
+
+
+
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */

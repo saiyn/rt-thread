@@ -99,7 +99,33 @@
 
 /* Device virtual file system */
 
-/* RT_USING_DFS is not set */
+#define RT_USING_DFS
+#define DFS_USING_WORKDIR
+#define DFS_FILESYSTEMS_MAX 2
+#define DFS_FILESYSTEM_TYPES_MAX 2
+#define DFS_FD_MAX 16
+/* RT_USING_DFS_MNTTABLE is not set */
+#define RT_USING_DFS_ELMFAT
+
+/* elm-chan's FatFs, Generic FAT Filesystem Module */
+
+#define RT_DFS_ELM_CODE_PAGE 437
+#define RT_DFS_ELM_WORD_ACCESS
+/* RT_DFS_ELM_USE_LFN_0 is not set */
+/* RT_DFS_ELM_USE_LFN_1 is not set */
+/* RT_DFS_ELM_USE_LFN_2 is not set */
+#define RT_DFS_ELM_USE_LFN_3
+#define RT_DFS_ELM_USE_LFN 3
+#define RT_DFS_ELM_MAX_LFN 255
+#define RT_DFS_ELM_DRIVES 2
+#define RT_DFS_ELM_MAX_SECTOR_SIZE 512
+/* RT_DFS_ELM_USE_ERASE is not set */
+#define RT_DFS_ELM_REENTRANT
+/* RT_USING_DFS_DEVFS is not set */
+/* RT_USING_DFS_ROMFS is not set */
+/* RT_USING_DFS_RAMFS is not set */
+/* RT_USING_DFS_UFFS is not set */
+/* RT_USING_DFS_JFFS2 is not set */
 
 /* Device Drivers */
 
@@ -121,7 +147,13 @@
 /* RT_USING_MTD is not set */
 /* RT_USING_PM is not set */
 /* RT_USING_RTC is not set */
-/* RT_USING_SDIO is not set */
+#define RT_USING_SDIO
+#define RT_SDIO_STACK_SIZE 512
+#define RT_SDIO_THREAD_PRIORITY 15
+#define RT_MMCSD_STACK_SIZE 1024
+#define RT_MMCSD_THREAD_PREORITY 22
+#define RT_MMCSD_MAX_PARTITION 16
+#define RT_SDIO_DEBUG
 #define RT_USING_SPI
 /* RT_USING_QSPI is not set */
 /* RT_USING_SPI_MSD is not set */
@@ -285,7 +317,13 @@
 /* PKG_USING_SENSORS_DRIVERS is not set */
 /* PKG_USING_REALTEK_AMEBA is not set */
 /* PKG_USING_SHT2X is not set */
-/* PKG_USING_STM32_SDIO is not set */
+#define PKG_USING_STM32_SDIO
+#define SDIO_BUFF_SIZE 4096
+#define SDIO_MAX_FREQ 12000000
+#define SDIO_ALIGN_LEN 32
+/* SDIO_USING_1_BIT is not set */
+#define PKG_USING_STM32_SDIO_V102
+/* PKG_USING_STM32_SDIO_LATEST_VERSION is not set */
 /* PKG_USING_ICM20608 is not set */
 /* PKG_USING_U8G2 is not set */
 /* PKG_USING_BUTTON is not set */
