@@ -348,7 +348,64 @@ __exit:
  *        -2 : timeout
  *        -5 : no memory
  */
-int at_client_obj_wait_connect(at_client_t client, rt_uint32_t timeout)
+int at_client_obj_wait_connect(at_client_t client, const char *cmd_expr, const char *resp_kw, rt_uint32_t timeout)
+{
+    rt_err_t result = RT_EOK;
+    at_response_t resp = RT_NULL;
+    rt_tick_t start_time = 0;
+    char *client_name = client->device->parent.name;
+
+    if (client == RT_NULL)
+    {
+        LOG_E("input AT client object is NULL, please create or get AT Client object!");
+        return -RT_ERROR;
+    }
+
+    resp = at_create_resp(64, 0, rt_tick_from_millisecond(300));
+    if (resp == RT_NULL)
+    {
+        LOG_E("no memory for AT client(%s) response object.", client_name);
+        return -RT_ENOMEM;
+    }
+
+    rt_mutex_take(client->lock, RT_WAITING_FOREVER);
+    client->resp = resp;
+
+    start_time = rt_tick_get();
+
+    while (1)
+    {
+        /* Check whether it is timeout */
+        if (rt_tick_get() - start_time > rt_tick_from_millisecond(timeout))
+        {
+            LOG_E("wait AT client(%s) wanted resp timeout(%d tick).", client_name, timeout);
+            result = -RT_ETIMEOUT;
+            break;
+        }
+
+        /* Check whether it is already connected */
+        resp->buf_len = 0;
+        resp->line_counts = 0;
+        rt_device_write(client->device, 0, cmd_expr, sizeof(cmd_expr) - 1);
+
+        if (rt_sem_take(client->resp_notice, resp->timeout) != RT_EOK)
+            continue;
+        else{
+			
+	}
+            break;
+    }
+
+    at_delete_resp(resp);
+
+    client->resp = RT_NULL;
+
+    rt_mutex_release(client->lock);
+
+    return result;
+}
+
+int at_client_obj_wait_wanted_resp(at_client_t client, const char *cmd_expr, const char *resp_kw, rt_uint32_t timeout)
 {
     rt_err_t result = RT_EOK;
     at_response_t resp = RT_NULL;
@@ -386,12 +443,14 @@ int at_client_obj_wait_connect(at_client_t client, rt_uint32_t timeout)
         /* Check whether it is already connected */
         resp->buf_len = 0;
         resp->line_counts = 0;
-        rt_device_write(client->device, 0, "AT\r\n", 4);
+        rt_device_write(client->device, 0, cmd_expr, strlen(cmd_expr));
 
         if (rt_sem_take(client->resp_notice, resp->timeout) != RT_EOK)
             continue;
-        else
+        else if(strstr(resp->buf, resp_kw))
             break;
+	else
+	    continue;
     }
 
     at_delete_resp(resp);
@@ -402,6 +461,10 @@ int at_client_obj_wait_connect(at_client_t client, rt_uint32_t timeout)
 
     return result;
 }
+
+
+
+
 
 /**
  * Send data to AT server, send data don't have end sign(eg: \r\n).

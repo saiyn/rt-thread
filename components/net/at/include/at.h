@@ -237,6 +237,7 @@ const char *at_resp_get_line_by_kw(at_response_t resp, const char *keyword);
 int at_resp_parse_line_args(at_response_t resp, rt_size_t resp_line, const char *resp_expr, ...);
 int at_resp_parse_line_args_by_kw(at_response_t resp, const char *keyword, const char *resp_expr, ...);
 
+int at_client_obj_wait_wanted_resp(at_client_t client, const char *cmd_expr, const char *resp_kw, rt_uint32_t timeout);
 /* ========================== single AT client function ============================ */
 
 /**

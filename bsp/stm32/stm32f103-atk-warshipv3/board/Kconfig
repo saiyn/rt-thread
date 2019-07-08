@@ -7,6 +7,11 @@ config SOC_STM32F103ZE
 
 menu "Onboard Peripheral Drivers"
 
+    config BSP_USING_SDCARD
+	bool "Enable SDCARD (sdio)"
+	select BSP_USING_SDIO
+	default n
+
     config BSP_USING_USB_TO_USART
         bool "Enable USB TO USART (uart1)"
         select BSP_USING_UART

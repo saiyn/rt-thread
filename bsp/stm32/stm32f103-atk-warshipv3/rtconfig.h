@@ -377,6 +377,7 @@
 
 /* Onboard Peripheral Drivers */
 
+#define BSP_USING_SDCARD
 #define BSP_USING_USB_TO_USART
 /* BSP_USING_EEPROM is not set */
 #define BSP_USING_SPI_FLASH
@@ -390,7 +391,8 @@
 #define BSP_UART1_RX_USING_DMA
 #define BSP_USING_UART2
 /* BSP_UART2_RX_USING_DMA is not set */
-/* BSP_USING_UART3 is not set */
+#define BSP_USING_UART3
+#define BSP_UART3_RX_USING_DMA
 /* BSP_USING_TIM is not set */
 /* BSP_USING_PWM is not set */
 #define BSP_USING_SPI

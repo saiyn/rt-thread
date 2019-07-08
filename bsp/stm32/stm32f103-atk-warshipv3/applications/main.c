@@ -31,6 +31,10 @@ typedef struct {
 
 
 extern int Font_init(void);
+extern int Sdcard_mount(void);
+
+extern void SIM_Init();
+
 
 int main(void)
 {
@@ -44,67 +48,21 @@ int main(void)
     /* set LED1 pin mode to output */
     rt_pin_mode(LED1_PIN, PIN_MODE_OUTPUT);
 
-#if 0
-    lcd = rt_device_find("display");
-    if(!lcd)
-    {
-	rt_kprintf("find display failed\n");
-	return RT_ERROR;
-    }
-    else
-    {
-	rt_kprintf("find display device\n");
-    }
 
+     SIM_Init();
 
-    res = rt_device_init(lcd);
-    if(res != RT_EOK)
-    {
-	rt_kprintf("init display failed\n");
-	return res;
-    }
-    else
-    {
-	rt_kprintf("display init ok\n");
-    }
-
-   
-    res = rt_device_open(lcd, 0);
-    if(res != RT_EOK)
-    {
-	rt_kprintf("open display failed\n");
-	return res;
-    }
-    else
-    {
-	rt_kprintf("display open ok\n");
-    }	
- 
-    lcd_arg_t line = {20, 10, 200, 300, 0};
-
-    res = rt_device_control(lcd, 0x14, &line);  
-
-
-     lcd_arg_t point = {100, 100, 400, 300, 0};
-
-     rt_device_control(lcd, 0x13, &point);
-
-
-     lcd_arg_t rectangle = {300, 50, 500, 200, 0};
-
-     rt_device_control(lcd, 0x15, &rectangle);
-#endif
+    
+    // Sdcard_mount();
 
      w25q_init();
 
 
      Font_init();
 
-     LCD_init();
+     //LCD_init();
 
-    // Font_show_str(100, 100, 200, 24, "смнб",24, 0);  
 
-     LCD_show_ui();
+     //LCD_show_ui();
 	
     while (count++)
     {
