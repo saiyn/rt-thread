@@ -126,12 +126,25 @@ MSH_CMD_EXPORT(atcmd, at cmd transfor);
 #define DBG_LVL  DBG_INFO
 #include <rtdbg.h>
 
+
+#define SIM868_CT_PIN	GET_PIN(B,1)
+
+#define SIM868_CT_ON do{			\
+	rt_pin_write(SIM868_CT_PIN, PIN_LOW);	\
+}while(0)
+
+#define SIM868_CT_OFF do{			\
+	rt_pin_write(SIM868_CT_PIN, PIN_HIGH);	\
+}while(0)
+
+
+
 static struct at_urc urc_table[] = {
 	{""},
 
 };
 
-static at_clinet_t sim868;
+static at_client_t sim868;
 
 
 void SIM868_Init(void)
@@ -154,7 +167,6 @@ void SIM868_Init(void)
 		LOG_I("sim868 connect ok");
 		return;
 	}
-
 
 	if(ret == -RT_ETIMEOUT){
 		LOG_E("at connect fail, try power up");
@@ -236,6 +248,7 @@ void SIM868_GSM_Init(void)
 		}
 	}
 
+	//close TCP connect to discard any protential provious tcp session
 	at_obj_exec_cmd(sim868, RT_NULL, "AT+CIPCLOSE=1\r\n");
 
 	
@@ -244,22 +257,17 @@ void SIM868_GSM_Init(void)
 		LOG_E("SIM CIPSHUT fail");
 	}
 	
-	
+	//set GPRS Mobile Station Class
 	ret = at_client_obj_wait_wanted_resp(sim868, "AT+CGCLASS=\"B\"\r\n", "OK", 1000);
-	
+	//define PDP context
 	ret = at_client_obj_wait_wanted_resp(sim868, "AT+CGDCONT=1,\"IP\",\"CMNET\"\r\n", "OK", 1000);
-
+	//attach GPRS
 	ret = at_client_obj_wait_wanted_resp(sim868, "AT+CGATT=1\r\n", "OK", 1000);
-
-	
+	//set GPRS connection Mode
 	ret = at_client_obj_wait_wanted_resp(sim868, "AT+CIPCSGP=1,\"CMNET\"\r\n", "OK", 1000);
 
 
 
-
-
-
-	
 	
 }
 
