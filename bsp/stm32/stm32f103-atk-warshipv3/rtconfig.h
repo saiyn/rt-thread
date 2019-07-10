@@ -121,7 +121,7 @@
 #define RT_DFS_ELM_MAX_SECTOR_SIZE 512
 /* RT_DFS_ELM_USE_ERASE is not set */
 #define RT_DFS_ELM_REENTRANT
-/* RT_USING_DFS_DEVFS is not set */
+#define RT_USING_DFS_DEVFS
 /* RT_USING_DFS_ROMFS is not set */
 /* RT_USING_DFS_RAMFS is not set */
 /* RT_USING_DFS_UFFS is not set */
@@ -131,7 +131,9 @@
 
 #define RT_USING_DEVICE_IPC
 #define RT_PIPE_BUFSZ 512
-/* RT_USING_SYSTEM_WORKQUEUE is not set */
+#define RT_USING_SYSTEM_WORKQUEUE
+#define RT_SYSTEM_WORKQUEUE_STACKSIZE 2048
+#define RT_SYSTEM_WORKQUEUE_PRIORITY 23
 #define RT_USING_SERIAL
 #define RT_SERIAL_USING_DMA
 #define RT_SERIAL_RB_BUFSZ 64
@@ -184,18 +186,33 @@
 
 /* POSIX layer and C standard library */
 
-/* RT_USING_LIBC is not set */
+#define RT_USING_LIBC
 /* RT_USING_PTHREADS is not set */
+#define RT_USING_POSIX
+/* RT_USING_POSIX_MMAP is not set */
+/* RT_USING_POSIX_TERMIOS is not set */
+/* RT_USING_POSIX_AIO is not set */
+/* RT_USING_MODULE is not set */
 
 /* Network */
 
 /* Socket abstraction layer */
 
-/* RT_USING_SAL is not set */
+#define RT_USING_SAL
+
+/* protocol stack implement */
+
+#define SAL_USING_AT
+/* SAL_USING_POSIX is not set */
+#define SAL_SOCKETS_NUM 16
 
 /* Network interface device */
 
-/* RT_USING_NETDEV is not set */
+#define RT_USING_NETDEV
+#define NETDEV_USING_IFCONFIG
+#define NETDEV_USING_PING
+#define NETDEV_USING_NETSTAT
+#define NETDEV_USING_AUTO_DEFAULT
 
 /* light weight TCP/IP stack */
 
@@ -207,7 +224,16 @@
 
 /* AT commands */
 
-/* RT_USING_AT is not set */
+#define RT_USING_AT
+#define AT_DEBUG
+/* AT_USING_SERVER is not set */
+#define AT_USING_CLIENT
+#define AT_CLIENT_NUM_MAX 1
+#define AT_USING_SOCKET
+#define AT_USING_CLI
+#define AT_PRINT_RAW_CMD
+#define AT_CMD_MAX_LEN 128
+#define AT_SW_VERSION_NUM 0x10300
 
 /* VBUS(Virtual Software BUS) */
 
@@ -249,7 +275,21 @@
 /* PKG_USING_COAP is not set */
 /* PKG_USING_NOPOLL is not set */
 /* PKG_USING_NETUTILS is not set */
-/* PKG_USING_AT_DEVICE is not set */
+#define PKG_USING_AT_DEVICE
+/* AT_DEVICE_USING_M26 is not set */
+/* AT_DEVICE_USING_EC20 is not set */
+/* AT_DEVICE_USING_ESP8266 is not set */
+/* AT_DEVICE_USING_RW007 is not set */
+#define AT_DEVICE_USING_SIM800C
+#define AT_DEVICE_SIM800C_INIT_ASYN
+#define AT_DEVICE_SIM800C_SAMPLE
+#define SIM800C_SAMPLE_POWER_PIN -1
+#define SIM800C_SAMPLE_STATUS_PIN -1
+#define SIM800C_SAMPLE_CLIENT_NAME "uart3"
+#define SIM800C_SAMPLE_RECV_BUFF_LEN 512
+/* AT_DEVICE_USING_SIM76XX is not set */
+#define PKG_USING_AT_DEVICE_LATEST_VERSION
+#define PKG_AT_DEVICE_VER_NUM 0x99999
 /* PKG_USING_ATSRV_SOCKET is not set */
 /* PKG_USING_WIZNET is not set */
 

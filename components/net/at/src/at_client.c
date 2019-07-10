@@ -348,7 +348,7 @@ __exit:
  *        -2 : timeout
  *        -5 : no memory
  */
-int at_client_obj_wait_connect(at_client_t client, const char *cmd_expr, const char *resp_kw, rt_uint32_t timeout)
+int at_client_obj_wait_connect(at_client_t client, rt_uint32_t timeout)
 {
     rt_err_t result = RT_EOK;
     at_response_t resp = RT_NULL;
@@ -386,7 +386,7 @@ int at_client_obj_wait_connect(at_client_t client, const char *cmd_expr, const c
         /* Check whether it is already connected */
         resp->buf_len = 0;
         resp->line_counts = 0;
-        rt_device_write(client->device, 0, cmd_expr, sizeof(cmd_expr) - 1);
+        rt_device_write(client->device, 0, "AT\r\n", 4);
 
         if (rt_sem_take(client->resp_notice, resp->timeout) != RT_EOK)
             continue;

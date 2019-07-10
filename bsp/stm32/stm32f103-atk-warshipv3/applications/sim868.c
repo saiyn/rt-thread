@@ -267,14 +267,62 @@ void SIM868_GSM_Init(void)
 	ret = at_client_obj_wait_wanted_resp(sim868, "AT+CIPCSGP=1,\"CMNET\"\r\n", "OK", 1000);
 
 
+}
+///////////////////////////////////////////////////////////////////////////
+#include <at_device_sim800c.h>
 
+#include <arpa/inet.h>
+#include <netdev.h>
+
+#define SERVER_HOST   "52.15.134.205"
+#define SERVER_PORT 	80
+
+
+int Sim_server_login(int argc, char **argv)
+{
+	struct sockaddr_in client_addr;
+	struct sockaddr_in server_addr;
+	struct netdev *netdev = RT_NULL;
+	int sockfd = -1;
+
+	netdev = netdev_get_by_name("sim868");
+	if(netdev == RT_NULL)
+	{
+		rt_kprintf("can't get netdev:sim868\n");
+		return -RT_ERROR;
+	}
+
+	if((sockfd = socket(AF_AT, SOCK_STREAM, 0)) < 0 )
+	{
+		rt_kprintf("");
 	
+	}
+
 }
 
 
 
+static struct at_device_sim800c _sim868 = 
+{
+	"sim868",
+	SIM_UART_NAME,
+	-1,
+	-1,
+	512,
+};
 
 
+static int sim868_device_register(void)
+{
+	struct at_device_sim800c *sim868 = &_sim868;
+
+	return at_device_register(&(sim868->device),
+					sim868->device_name,
+					sim868->client_name
+					AT_DEIVE_CLASS_SIM800C,(void *)sim868);
+}
+
+INIT_APP_EXPORT(sim868_device_register);
 
 
 
