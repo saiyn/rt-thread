@@ -298,7 +298,40 @@ int Sim_server_login(int argc, char **argv)
 	
 	}
 
+	client_addr.sin_family = AF_AT;
+	client_addr.sin_port = htons(8088);
+
+	client_addr.sin_addr.s_addr = netdev->ip_addr.addr;
+	rt_memset(&(client_addr.sin_zero), 0, sizeof(client_addr.sin_zero));
+
+	if(bind(sockfd, (struct sockaddr *)&client_addr, sizeof(struct sockaddr)) < 0){
+		rt_kprintf("socket bind failed\n");
+		closesocket(sockfd);
+		return -RT_ERROR;
+	}
+
+	rt_kprintf("socket bind network interface device(%s) success\n", netdev->name);
+
+	server_addr.sin_family = AF_AT;
+	server_addr.sin_port = htons(SERVER_PORT);
+	server_addr.sin_addr.s_addr = inet_addr(SERVER_HOST);
+	rt_memset(&(server_addr.sin_zero), 0, sizeof(server_addr.sin_zero));
+
+	
+	if(connect(sockfd, (struct sockaddr *)&server_addr, sizeof(struct sockaddr)) < 0){
+		rt_kprintf("socket connect failed\n");
+		closesocket(sockfd);
+		return -RT_ERROR;
+	}else{
+		rt_kprintf("socket connect success\n");
+	}
+
+	closesocket(sockfd);
+	
+	return RT_EOK;
 }
+
+MSH_CMD_EXPORT(Sim_server_login, login server by sim gprs);
 
 
 
@@ -318,8 +351,8 @@ static int sim868_device_register(void)
 
 	return at_device_register(&(sim868->device),
 					sim868->device_name,
-					sim868->client_name
-					AT_DEIVE_CLASS_SIM800C,(void *)sim868);
+					sim868->client_name,
+					AT_DEVICE_CLASS_SIM800C,(void *)sim868);
 }
 
 INIT_APP_EXPORT(sim868_device_register);
