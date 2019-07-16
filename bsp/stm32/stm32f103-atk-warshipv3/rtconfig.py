@@ -17,7 +17,7 @@ if os.getenv('RTT_ROOT'):
 # EXEC_PATH is the compiler execute path, for example, CodeSourcery, Keil MDK, IAR
 if  CROSS_TOOL == 'gcc':
     PLATFORM    = 'gcc'
-    EXEC_PATH   = r'/usr/bin'
+    EXEC_PATH   = r'/home/saiyn/work/package/gcc-arm-none-eabi-7-2018-q2-update/bin'
 elif CROSS_TOOL == 'keil':
     PLATFORM    = 'armcc'
     EXEC_PATH   = r'C:/Keil_v5'
@@ -52,8 +52,8 @@ if PLATFORM == 'gcc':
     LPATH = ''
 
     if BUILD == 'debug':
-        CFLAGS += ' -O0 -gdwarf-2 -g'
-        AFLAGS += ' -gdwarf-2'
+        CFLAGS += ' -O0  -g'
+        #AFLAGS += ' -gdwarf-2'
     else:
         CFLAGS += ' -O2'
 

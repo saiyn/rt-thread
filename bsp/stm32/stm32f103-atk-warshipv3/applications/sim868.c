@@ -337,7 +337,7 @@ MSH_CMD_EXPORT(Sim_server_login, login server by sim gprs);
 
 static struct at_device_sim800c _sim868 = 
 {
-	"sim868",
+	"sim0",
 	SIM_UART_NAME,
 	-1,
 	-1,
